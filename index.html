@@ -254,6 +254,39 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:#222;m
     </div>
   </div>
 
+
+  <!-- ── SALIVARY CAR ─── -->
+  <div class="section" id="sec-saliva">
+    <div class="section-hdr" onclick="toggleSection('saliva')">
+      <h3>🫧 Salivary CAR – Cortisol &amp; Cortisone</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="active-count" id="cnt-saliva">0 flagged</span>
+        <span class="arrow" id="arr-saliva">▼</span>
+      </div>
+    </div>
+    <div class="section-body" id="body-saliva">
+      <div style="background:#fffbe6;border-left:3px solid #e6b800;padding:8px 12px;margin-bottom:8px;font-size:12px;color:#555;">Salivary cortisol and cortisone reflect the Cortisol Awakening Response (CAR) and circadian HPA axis rhythm. Saliva measures bioavailable (unbound) hormone. Cortisone in saliva reflects local 11β-HSD2 conversion and closely mirrors serum free cortisol. The Insomnia sample is collected if the patient wakes at night.</div>
+
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#667;letter-spacing:.05em;padding:6px 0 2px;">Salivary Free Cortisol</div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisol – Waking</div><div class="marker-sub">Baseline upon waking; initiates CAR; reflects initial adrenal output</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCW','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCW','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCW','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisol – W+30 min</div><div class="marker-sub">Peak CAR; should rise 50–200% above waking; blunted = HPA suppression</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalC30','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalC30','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalC30','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisol – W+60 min</div><div class="marker-sub">Should begin declining from W+30 peak; sustained high = CAR dysregulation</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalC60','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalC60','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalC60','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisol – Evening</div><div class="marker-sub">Should be low; elevated = inverted rhythm, chronic stress, or poor sleep</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCE','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCE','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCE','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisol – Night</div><div class="marker-sub">Should be very low; elevated = nocturnal HPA activation, poor sleep architecture</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCN','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCN','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCN','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisol – Insomnia</div><div class="marker-sub">Collected upon nocturnal waking; elevated confirms stress-driven insomnia</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCI','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCI','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCI','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisol – Total</div><div class="marker-sub">Cumulative daily cortisol exposure via saliva; ref 11.0–24.0 ng/mL</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCT','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCT','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCT','n',this)">NL</button></div></div>
+
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#667;letter-spacing:.05em;padding:10px 0 2px;">Salivary Free Cortisone</div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisone – Waking</div><div class="marker-sub">Inactive cortisol metabolite (11β-HSD2 in salivary glands); mirrors serum free cortisol</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCortsW','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCortsW','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCortsW','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisone – W+30 min</div><div class="marker-sub">Waking + 30 min; reflects 11β-HSD2 activity at CAR peak</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCorts30','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCorts30','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCorts30','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisone – W+60 min</div><div class="marker-sub">Should begin declining; sustained elevation = prolonged morning HPA activation</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCorts60','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCorts60','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCorts60','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisone – Evening</div><div class="marker-sub">Ref 3.2–6.8 ng/mL; elevated = prolonged stress or abnormal 11β-HSD2 activity</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCortsE','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCortsE','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCortsE','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisone – Night</div><div class="marker-sub">Ref 1.3–3.4 ng/mL; elevated = nocturnal HPA hyperactivity; linked to insomnia and metabolic risk</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCortsN','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCortsN','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCortsN','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">Saliva Cortisone – Insomnia</div><div class="marker-sub">Ref 1.3–3.4 ng/mL; confirms nocturnal HPA activation; reflects disrupted circadian cortisone regulation</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCortsI','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCortsI','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCortsI','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">Saliva Cortisone – Total</div><div class="marker-sub">Cumulative daily cortisone exposure; ref 34.0–65.0 ng/mL; &gt;65 = chronic HPA activation</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('SalCortsT','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('SalCortsT','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('SalCortsT','n',this)">NL</button></div></div>
+    </div>
+  </div>
+
   <!-- ── MELATONIN ─── -->
   <div class="section" id="sec-melatonin">
     <div class="section-hdr" onclick="toggleSection('melatonin')">
@@ -448,6 +481,59 @@ const PRODUCTS = {
 // ── PROTOCOL RULES ────────────────────────────────────────────
 // Each rule: { id, condition, products:[{name, why}], flag? }
 const RULES = [
+
+// ── SALIVARY CAR CORTISOL ──────────────────────────────────
+{id:'SalC_car_blunted', cond:()=>s('SalC30')=='l'||s('SalC60')=='l', section:'saliva', label:'Blunted CAR – Low Salivary Cortisol (W+30 or W+60 low; poor HPA awakening response)', products:[
+  {n:'Adrenal LF', w:'Adrenal glandular + adaptogens to restore CAR magnitude; rhodiola and eleuthero support morning HPA output'},
+  {n:'Adreno Code', w:'Homeopathic drainage code to restore adrenal cortex vitality and circadian cortisol output'},
+  {n:'Licro Intrinsic', w:'Licorice inhibits 11β-HSD2, extending cortisol half-life and elevating free cortisol during CAR window'},
+  {n:'Pregnenolone Liposomal Drops', w:'Upstream cortisol precursor; pregnenolone → progesterone → 17-OH-progesterone → cortisol'},
+  {n:'DHEA Liposomal Drops', w:'DHEA co-depletion common with blunted CAR; restores adrenal precursor pool'},
+], flag:'Blunted CAR (flat or absent rise in cortisol 30–60 min post-waking) indicates HPA axis hypoactivation. Associated with burnout, chronic fatigue, PTSD, and poor resilience. Correlate with low waking values and Total salivary cortisol.'},
+{id:'SalC_high_car', cond:()=>s('SalCW')=='h'||s('SalC30')=='h'||s('SalC60')=='h', section:'saliva', label:'Elevated CAR – High Morning Salivary Cortisol (HPA hyperactivation)', products:[
+  {n:'HPA Axis LF', w:'Ashwagandha (clinically proven to lower cortisol) + pituitary glandular to downregulate morning HPA hyperactivation'},
+  {n:'Adrenal LF', w:'Bidirectional adaptogenic normalization of morning cortisol excess; rhodiola blunts acute cortisol surges'},
+  {n:'5-HTP Liposome Spray', w:'Serotonin pathway calms morning HPA hyperactivation and cortisol surge pattern'},
+  {n:'Hypothal Code', w:'Homeopathic hypothalamic-pituitary-adrenal axis regulation; addresses upstream driver of elevated CAR'},
+], flag:'Elevated CAR suggests anticipatory stress, anxiety, or HPA axis hyperactivation. High W+60 (sustained peak) is particularly significant for anxiety and rumination patterns.'},
+{id:'SalC_high_evening_night', cond:()=>s('SalCE')=='h'||s('SalCN')=='h'||s('SalCI')=='h', section:'saliva', label:'Elevated Evening / Night / Insomnia Salivary Cortisol (inverted diurnal rhythm)', products:[
+  {n:'HPA Axis LF', w:'Reduces chronic HPA hyperactivation driving evening/nocturnal cortisol elevation'},
+  {n:'Melatonin Liposome Spray', w:'Melatonin reciprocally suppresses HPA axis at night; directly reduces nocturnal cortisol secretion'},
+  {n:'5-HTP Liposome Spray', w:'Serotonin → melatonin pathway supports evening HPA axis downregulation'},
+  {n:'Magnesium BisGlycinate + L-Taurine', w:'Magnesium suppresses HPA axis reactivity and lowers nocturnal cortisol; critical for sleep architecture'},
+  {n:'Phosphatidylserine (PS)', w:'PS is the gold-standard natural cortisol buffer; 400mg/day shown to blunt evening cortisol elevation'},
+], flag:'Elevated evening or nocturnal cortisol represents an inverted circadian rhythm. Associated with insomnia, nighttime awakening, metabolic syndrome risk, and immune dysregulation.'},
+{id:'SalCT_h', cond:()=>s('SalCT')=='h', section:'saliva', label:'High Total Salivary Cortisol (chronic HPA hyperactivation)', products:[
+  {n:'HPA Axis LF', w:'Primary cortisol-lowering adaptogen formula; clinically validated ashwagandha reduces total cortisol burden'},
+  {n:'Adrenal LF', w:'Adaptogenic support to normalize bidirectional adrenal output over time'},
+  {n:'HepataGest Powder', w:'Hepatic cortisol metabolite clearance; supports Phase I/II breakdown of excess cortisol load'},
+], flag:'Elevated total salivary cortisol (>24 ng/mL) indicates chronic HPA overactivation. Correlate with Total Cortisone and urinary cortisol metabolites for complete picture.'},
+{id:'SalCT_l', cond:()=>s('SalCT')=='l', section:'saliva', label:'Low Total Salivary Cortisol (HPA hypoactivation / adrenal fatigue)', products:[
+  {n:'Adrenal LF', w:'Adrenal glandular + botanical adaptogens to restore total cortisol output capacity'},
+  {n:'Adreno Code', w:'Homeopathic adrenal drainage to restore vitality and improve cortisol production'},
+  {n:'Licro Intrinsic', w:'Extends cortisol half-life via 11β-HSD2 inhibition, raising effective free cortisol levels'},
+  {n:'Pregnenolone Liposomal Drops', w:'Cortisol precursor supplementation to restore upstream steroidogenesis'},
+]},
+// ── SALIVARY CAR CORTISONE ─────────────────────────────────
+{id:'SalCortsT_h', cond:()=>s('SalCortsT')=='h', section:'saliva', label:'High Total Salivary Cortisone (chronic cortisol exposure / elevated 11β-HSD2 activity)', products:[
+  {n:'HPA Axis LF', w:'Reduces upstream cortisol production, thereby decreasing substrate for 11β-HSD2 cortisone conversion'},
+  {n:'Licro Intrinsic', w:'Glycyrrhizic acid inhibits 11β-HSD2 in salivary glands, directly reducing cortisol-to-cortisone conversion and lowering total salivary cortisone'},
+  {n:'Adrenal LF', w:'Adaptogenic normalization of overall cortisol burden reduces cortisone accumulation'},
+  {n:'Magnesium BisGlycinate + L-Taurine', w:'Magnesium modulates HPA axis and downstream cortisone metabolism'},
+], flag:'Total salivary cortisone >65 ng/mL reflects elevated systemic cortisol exposure. Because cortisone is often more concentrated than cortisol in saliva, this is a sensitive marker of prolonged HPA activation.'},
+{id:'SalCortsT_l', cond:()=>s('SalCortsT')=='l', section:'saliva', label:'Low Total Salivary Cortisone (reduced adrenal output or impaired 11β-HSD2 activity)', products:[
+  {n:'Adrenal LF', w:'Restores adrenal cortisol output; cortisone is derived from cortisol, so increasing cortisol substrate raises cortisone'},
+  {n:'Adreno Code', w:'Homeopathic adrenal drainage to restore adrenocortical function'},
+  {n:'Pregnenolone Liposomal Drops', w:'Restores upstream steroidogenesis to normalize cortisol/cortisone output'},
+]},
+{id:'SalCortsEN_h', cond:()=>s('SalCortsE')=='h'||s('SalCortsN')=='h'||s('SalCortsI')=='h', section:'saliva', label:'Elevated Evening / Night / Insomnia Salivary Cortisone (nocturnal HPA activation; disrupted circadian regulation)', products:[
+  {n:'HPA Axis LF', w:'Reduces HPA axis hyperactivity driving nocturnal cortisone elevation'},
+  {n:'Melatonin Liposome Spray', w:'Melatonin directly modulates nocturnal cortisone; 5mg shown to normalize elevated night cortisone and improve sleep quality'},
+  {n:'5-HTP Liposome Spray', w:'Serotonin → melatonin supports evening HPA axis downregulation and normalizes nocturnal cortisone rhythm'},
+  {n:'Magnesium BisGlycinate + L-Taurine', w:'Suppresses nocturnal HPA activation; critical for reducing night cortisone and improving sleep architecture'},
+  {n:'Licro Intrinsic', w:'Glycyrrhizic acid inhibits 11β-HSD2 and modulates nocturnal cortisol-cortisone interconversion'},
+], flag:'Elevated nocturnal or insomnia cortisone reflects persistent HPA activation during sleep. This disrupts restorative sleep, increases metabolic and cardiovascular risk, and perpetuates HPA dysregulation.'},
+
 // ── ESTROGENS ────────────────────────────────────────────────
 {id:'E1_l', cond:()=>s('E1')=='l', section:'estrogen', label:'Low Estrone (E1)', products:[
   {n:'Cohosh Intrinsic 114', w:'Phytoestrogenic botanical blend to support estrogen precursor production (days 1–14 of cycle)'},
