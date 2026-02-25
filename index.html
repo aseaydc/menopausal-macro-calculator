@@ -341,7 +341,8 @@ body{font-family:'Source Sans 3',sans-serif;background:var(--cream);color:#222;m
       <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">2-MeO E1/2-OH E1</div><div class="marker-sub">COMT activity (methylation of 2-OH) · Both sexes</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_2MeO2OH','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_2MeO2OH','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_2MeO2OH','n',this)">NL</button></div></div>
       <div class="marker-row"><div><div class="marker-name">4-MeO E1/4-OH E1</div><div class="marker-sub">COMT methylation of carcinogenic 4-OH · Both sexes</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_4MeO4OH_E1','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_4MeO4OH_E1','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_4MeO4OH_E1','n',this)">NL</button></div></div>
       <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">4-MeO E2/4-OH E2</div><div class="marker-sub">COMT methylation; higher = lower cancer risk · Both sexes</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_4MeO4OH_E2','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_4MeO4OH_E2','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_4MeO4OH_E2','n',this)">NL</button></div></div>
-      <div class="marker-row"><div><div class="marker-name">β-Pregnanediol/E2 Ratio</div><div class="marker-sub">Estrogen dominance indicator · Females</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_bPregE2','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_bPregE2','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_bPregE2','n',this)">NL</button></div></div>
+      <div class="marker-row"><div><div class="marker-name">5α-Dominance Ratio (Androsterone / Etiocholanolone)</div><div class="marker-sub">5α- vs 5β-reductase balance; potent androgen pathway activity · Ref 0.75–2.5 · Both sexes</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_5aDom','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_5aDom','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_5aDom','n',this)">NL</button></div></div>
+      <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">β-Pregnanediol/E2 Ratio</div><div class="marker-sub">Estrogen dominance indicator · Females</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_bPregE2','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_bPregE2','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_bPregE2','n',this)">NL</button></div></div>
       <div class="marker-row" style="background:#f9faff;"><div><div class="marker-name">T/Epi-T Ratio</div><div class="marker-sub">Androgen deficiency / T metabolism marker · Both sexes</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_TEpiT','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_TEpiT','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_TEpiT','n',this)">NL</button></div></div>
       <div class="marker-row"><div><div class="marker-name">Cortisol/Cortisone Ratio</div><div class="marker-sub">11β-HSD enzyme activity marker · Both sexes</div></div><div class="hl-group"><button class="hl-btn h" onclick="setMarker('R_CortCorts','h',this)">HIGH</button><button class="hl-btn l" onclick="setMarker('R_CortCorts','l',this)">LOW</button><button class="hl-btn n active" onclick="setMarker('R_CortCorts','n',this)">NL</button></div></div>
     </div>
@@ -471,7 +472,7 @@ const PRODUCTS = {
   'Solray-D3 + K2 Liposome Spray':{dose:'5 sprays sublingually daily', cat:'Matrix'},
   'Collagen Peptides LF Powder': {dose:'1 scoop in water or smoothie daily', cat:'Powder'},
   // ZINC
-  'Zinc-Oro Liposome Composite': {dose:'1 full dropper sublingually 2x daily', cat:'Matrix'},
+  'Zinc-Oro Liposome Composite': {dose:'1 capsule 1x daily (acute: 1 capsule 3x daily; chronic: 2 capsules 1x daily)', cat:'Matrix'},
   // PROGESTERONE SUPPORT (GABA)
   // male specific
   'Endo Code M':                 {dose:'1 full dropper 2x daily in warm water', cat:'Code'},
@@ -857,6 +858,19 @@ const RULES = [
   {n:'NAC Forte', w:'N-Acetyl-L-Cysteine provides cysteine for glutathione synthesis to quench reactive quinones'},
   {n:'Glutathione (GSH) Liposome', w:'Direct glutathione supplementation to bind reactive estrogen quinones'},
 ]},
+{id:'R_5aDom_h', cond:()=>s('R_5aDom')=='h', section:'ratios', label:'High 5α-Dominance (Androsterone/Etiocholanolone >2.5 – 5α-reductase overactivation)', products:[
+  {n:'DIM Liposome', w:'DIM modulates androgen metabolism and indirectly reduces 5α-reductase activity; shifts androgen metabolites toward less potent pathways'},
+  {n:'Zinc-Oro Liposome Composite', w:'Zinc is a direct 5α-reductase inhibitor; reduces conversion of testosterone/androstenedione down the 5α pathway'},
+  {n:'Estro Intrinsic', w:'Estrogen-supporting botanicals modulate androgen:estrogen balance; high 5α-dominance often co-occurs with relative estrogen deficiency'},
+  {n:'HepataGest Powder', w:'Hepatic Phase I/II support enhances androgen metabolite clearance; liver handles androsterone glucuronidation for excretion'},
+  {n:'MetaChlor', w:'Chlorella binds androgen metabolites in the GI tract, reducing enterohepatic recirculation of potent androgens'},
+], flag:'High 5α-dominance (>2.5) indicates upregulated 5α-reductase activity, driving excess potent androgens (DHT, androsterone, 5α-DHT). Clinical correlates: PCOS, hirsutism, androgenic alopecia, BPH, insulin resistance, acne. Cross-reference DHT, 5α,3α-androstanediol, and testosterone levels. Note: Saw Palmetto is the gold-standard 5α-reductase inhibitor but is NOT in the Physica line — flag for alternate company recommendation.'},
+{id:'R_5aDom_l', cond:()=>s('R_5aDom')=='l', section:'ratios', label:'Low 5α-Dominance (Androsterone/Etiocholanolone <0.75 – 5β-reductase dominant / reduced 5α activity)', products:[
+  {n:'DHEA Liposomal Drops', w:'Restores upstream androstenedione/DHEA substrate, supporting androsterone and 5α-reductase pathway repletion'},
+  {n:'Pregnenolone Liposomal Drops', w:'Upstream steroid precursor; supports overall steroidogenic flux including 5α-reduced pathway'},
+  {n:'Adrenal LF', w:'Adrenal glandular support restores DHEA-S/androstenedione substrate pool driving androsterone production'},
+  {n:'Zinc-Oro Liposome Composite', w:'Zinc co-factor for steroidogenic enzymes including 5α-reductase; low zinc impairs 5α pathway activity'},
+], flag:'Low 5α-dominance (<0.75) indicates reduced 5α-reductase activity with relative 5β-reductase dominance. Clinical associations: low androgen states, adrenal insufficiency, hypothyroidism (5β-reductase is thyroid-regulated), and use of 5α-reductase inhibitors (finasteride, ketoconazole). Cross-reference DHEA, androsterone, etiocholanolone, and DHT. Low 5α-dominance with low total androgens suggests upstream precursor deficiency.'},
 {id:'R_bPregE2_l', cond:()=>s('R_bPregE2')=='l', section:'ratios', label:'Low β-Pregnanediol/E2 Ratio (estrogen dominance)', products:[
   {n:'Dong Quai Intrinsic 1428', w:'Progesterone-supportive botanical blend (days 14–28) to raise progesterone metabolites relative to E2'},
   {n:'Pregnenolone Liposomal Drops', w:'Upstream precursor to progesterone to raise β-pregnanediol'},
