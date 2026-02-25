@@ -449,7 +449,12 @@ const PRODUCTS = {
   'NAC Forte':                   {dose:'2 capsules 2x daily', cat:'Capsule'},
   'HepataGest Powder':           {dose:'1 scoop in water 1–2x daily', cat:'Powder'},
   // ADRENAL
-  'Adrenal LF':                  {dose:'2 capsules 2x daily', cat:'Capsule'},
+  'Kidney Milieu':          {dose:'1 full dropper 2x daily in warm water (acute: 2 droppers 6x daily; chronic: 2 droppers 2x daily)', cat:'Drainage'},
+  'Rena-Tox':               {dose:'1 full dropper 2x daily in warm water (acute: 2 droppers 6x daily; chronic: 2 droppers 2x daily)', cat:'Detox'},
+  'Rena Code':              {dose:'1 full dropper 2x daily in warm water (acute: 2 droppers 6x daily; chronic: 2 droppers 2x daily)', cat:'Code'},
+  'Solidago Intrinsic':     {dose:'1 full dropper 2x daily in warm water (acute: 2 droppers 6x daily; chronic: 2 droppers 2x daily)', cat:'Botanical'},
+  'Juniper Intrinsic':      {dose:'1 full dropper 2x daily in warm water (acute: 2 droppers 6x daily; chronic: 2 droppers 2x daily)', cat:'Botanical'},
+    'Adrenal LF':                  {dose:'2 capsules 2x daily', cat:'Capsule'},
   'HPA Axis LF':                 {dose:'2 capsules daily', cat:'Capsule'},
   'Adreno Code':                 {dose:'1 full dropper 2x daily in warm water', cat:'Code'},
   'Licro Intrinsic':             {dose:'1 full dropper 2x daily in warm water', cat:'Botanical'},
@@ -817,11 +822,10 @@ const RULES = [
 ]},
 
 {id:'Creat_l', cond:()=>s('Creat1')=='l'||s('Creat2')=='l'||s('CreatE')=='l'||s('CreatN')=='l'||s('CreatP')=='l', section:'creatinine', label:'Low Creatinine (dilute urine – possible over-hydration or poor concentration)', products:[
-  {n:'Kidney Tonic', w:'Supports renal tubular reabsorption and urine concentrating ability'},
-  {n:'Magnesium BisGlycinate + L-Taurine', w:'Electrolyte support; helps optimize osmolarity and renal function'},
+  {n:'Rena Code', w:'Sarcode organotherapy specifically indicated for kidney dysregulation including impaired urine concentration; supports renal tubular reabsorption and tissue integrity'},
 ], flag:'Low creatinine suggests dilute urine. Hormone values may appear falsely low. Consider retesting with strict morning void instructions. Evaluate hydration habits and kidney function.'},
 {id:'Creat_h', cond:()=>s('Creat1')=='h'||s('Creat2')=='h'||s('CreatE')=='h'||s('CreatN')=='h'||s('CreatP')=='h', section:'creatinine', label:'High Creatinine (concentrated urine – possible dehydration)', products:[
-  {n:'Kidney Tonic', w:'Renal support; optimize kidney filtration and urine flow'},
+  {n:'Solidago Intrinsic', w:'Primary Physica renal botanical (goldenrod + horsetail + nettle); supports kidney decongestant function, healthy filtration, and urine flow — directly addresses concentrated/congested kidney state'},
 ], flag:'High creatinine indicates concentrated urine. Hormone values may appear falsely elevated. Encourage adequate hydration (half body weight in oz water daily). Rule out elevated muscle catabolism.'},
 {id:'Mel_h', cond:()=>s('Mel1')=='h'||s('MelP')=='h', section:'melatonin', label:'High Melatonin', products:[
   {n:'Hypothal Code', w:'Homeopathic hypothalamic-pineal regulation to normalize circadian feedback mechanisms'},
