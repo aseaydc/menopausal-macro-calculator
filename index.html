@@ -1,372 +1,402 @@
-import { useState, useEffect } from "react";
-
-const ACTIVITY_LEVELS = [
-  { label: "Lightly Active", desc: "Walking, gentle yoga, light movement most days", multiplier: 1.375, carbsPerKg: 3.0 },
-  { label: "Moderately Active", desc: "Strength training or cardio 3–4x/week", multiplier: 1.55, carbsPerKg: 4.0 },
-  { label: "Very Active", desc: "Daily intense training, CrossFit, endurance sport", multiplier: 1.725, carbsPerKg: 5.5 },
-];
-
-const STAGE_OPTIONS = [
-  { label: "Perimenopause", desc: "Still cycling, but irregularly (typically 40s–early 50s)", proteinMultiplier: 2.0 },
-  { label: "Menopause / Postmenopause", desc: "12+ months without a period", proteinMultiplier: 2.2 },
-];
-
-function RangeBar({ label, value, unit, min, max, color }) {
-  const pct = Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
-  return (
-    <div style={{ marginBottom: "10px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-        <span style={{ fontSize: "13px", color: "#6b5a4e", fontFamily: "'Libre Baskerville', serif" }}>{label}</span>
-        <span style={{ fontSize: "13px", fontWeight: "700", color: "#3d2c24" }}>{Math.round(value)}{unit}</span>
-      </div>
-      <div style={{ height: "8px", borderRadius: "4px", background: "#e8ddd6", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: "4px", transition: "width 0.5s ease" }} />
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "3px" }}>
-        <span style={{ fontSize: "11px", color: "#a08070" }}>{min}{unit}</span>
-        <span style={{ fontSize: "11px", color: "#a08070" }}>{max}{unit}</span>
-      </div>
-    </div>
-  );
-}
-
-function MacroCard({ label, grams, calories, pct, color, emoji, mealBreakdown }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div onClick={() => setOpen(!open)} style={{
-      background: "white",
-      borderRadius: "16px",
-      padding: "18px 20px",
-      cursor: "pointer",
-      border: `2px solid ${open ? color : "#f0e8e0"}`,
-      transition: "all 0.3s ease",
-      boxShadow: open ? `0 4px 20px ${color}40` : "0 2px 8px rgba(0,0,0,0.05)",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "40px", height: "40px", borderRadius: "12px", background: `${color}20`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>{emoji}</div>
-          <div>
-            <div style={{ fontFamily: "'Libre Baskerville', serif", fontWeight: "700", color: "#3d2c24", fontSize: "16px" }}>{label}</div>
-            <div style={{ fontSize: "12px", color: "#a08070" }}>{pct}% of calories</div>
-          </div>
-        </div>
-        <div style={{ textAlign: "right" }}>
-          <div style={{ fontFamily: "'Libre Baskerville', serif", fontWeight: "700", color, fontSize: "22px" }}>{Math.round(grams)}g</div>
-          <div style={{ fontSize: "12px", color: "#a08070" }}>{Math.round(calories)} kcal</div>
-        </div>
-      </div>
-      {open && (
-        <div style={{ marginTop: "14px", borderTop: "1px solid #f0e8e0", paddingTop: "12px" }}>
-          <div style={{ fontSize: "12px", color: "#7a6a5e", marginBottom: "8px", fontStyle: "italic" }}>Suggested per-meal distribution</div>
-          {mealBreakdown.map((m, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: i < mealBreakdown.length - 1 ? "1px solid #f8f4f0" : "none" }}>
-              <span style={{ fontSize: "13px", color: "#6b5a4e" }}>{m.meal}</span>
-              <span style={{ fontSize: "13px", fontWeight: "600", color: "#3d2c24" }}>{m.amount}g</span>
-            </div>
-          ))}
-          <div style={{ marginTop: "10px", padding: "10px", background: `${color}12`, borderRadius: "10px", fontSize: "12px", color: "#6b5a4e", lineHeight: "1.6" }}>
-            {m => m}{mealBreakdown[0]?.note}
-          </div>
-        </div>
-      )}
-      <div style={{ marginTop: "10px", textAlign: "center", fontSize: "11px", color: "#c0a090" }}>{open ? "▲ tap to close" : "▼ tap for meal breakdown"}</div>
-    </div>
-  );
-}
-
-export default function MenoMacros() {
-  const [unit, setUnit] = useState("imperial");
-  const [weight, setWeight] = useState("");
-  const [heightFt, setHeightFt] = useState("");
-  const [heightIn, setHeightIn] = useState("");
-  const [heightCm, setHeightCm] = useState("");
-  const [age, setAge] = useState("");
-  const [activity, setActivity] = useState(1);
-  const [stage, setStage] = useState(0);
-  const [results, setResults] = useState(null);
-
-  const calculate = () => {
-    let weightKg, heightCmVal;
-    if (unit === "imperial") {
-      weightKg = parseFloat(weight) * 0.453592;
-      const totalInches = parseFloat(heightFt) * 12 + parseFloat(heightIn || 0);
-      heightCmVal = totalInches * 2.54;
-    } else {
-      weightKg = parseFloat(weight);
-      heightCmVal = parseFloat(heightCm);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menopause Macro Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #fdf6f0 0%, #f5ebe0 50%, #ede0d4 100%);
+      min-height: 100vh;
+      font-family: 'Libre Baskerville', serif;
     }
-    const ageVal = parseFloat(age);
-    if (!weightKg || !heightCmVal || !ageVal) return;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type=number] { -moz-appearance: textfield; }
+    button { transition: all 0.2s; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+(function () {
+  var e = React.createElement;
+  var useState = React.useState;
 
-    const activityData = ACTIVITY_LEVELS[activity];
-    const stageData = STAGE_OPTIONS[stage];
+  var ACTIVITY = [
+    { label: "Lightly Active",    desc: "Walking, gentle yoga, light movement most days",    mult: 1.375, ck: 3.0 },
+    { label: "Moderately Active", desc: "Strength training or cardio 3 to 4 times per week", mult: 1.55,  ck: 4.0 },
+    { label: "Very Active",       desc: "Daily intense training, CrossFit, endurance sport",  mult: 1.725, ck: 5.5 },
+  ];
 
-    // Mifflin-St Jeor for women
-    const bmr = 10 * weightKg + 6.25 * heightCmVal - 5 * ageVal - 161;
-    const tdee = Math.round(bmr * activityData.multiplier);
+  var STAGES = [
+    { label: "Perimenopause",             desc: "Still cycling but irregularly (typically 40s to early 50s)", pm: 2.0 },
+    { label: "Menopause / Postmenopause", desc: "12 or more months without a period",                        pm: 2.2 },
+  ];
 
-    // Dr. Sims protein: 2.0–2.3g/kg
-    const proteinMin = stageData.proteinMultiplier * weightKg;
-    const proteinMax = (stageData.proteinMultiplier + 0.2) * weightKg;
-    const protein = Math.round((proteinMin + proteinMax) / 2);
-    const proteinCals = protein * 4;
-
-    // Dr. Sims carbs: activity-based g/kg
-    const carbs = Math.round(activityData.carbsPerKg * weightKg);
-    const carbCals = carbs * 4;
-
-    // Fat fills remaining
-    const fatCals = Math.max(tdee - proteinCals - carbCals, tdee * 0.25);
-    const fat = Math.round(fatCals / 9);
-
-    const totalCals = proteinCals + carbCals + Math.round(fat * 9);
-    const proteinPct = Math.round((proteinCals / totalCals) * 100);
-    const carbPct = Math.round((carbCals / totalCals) * 100);
-    const fatPct = Math.round((fat * 9 / totalCals) * 100);
-
-    // Per-meal breakdown (4 eating occasions: breakfast, lunch, dinner, snack)
-    const proteinMeals = [
-      { meal: "Breakfast", amount: Math.round(protein * 0.30), note: "Dr. Sims emphasizes a high-protein breakfast to stabilize cortisol and prevent muscle breakdown. Aim for 30–40g with eggs, Greek yogurt, protein powder, or smoked salmon." },
-      { meal: "Lunch", amount: Math.round(protein * 0.30) },
-      { meal: "Dinner", amount: Math.round(protein * 0.30) },
-      { meal: "Snack / Post-Workout", amount: Math.round(protein * 0.10) },
-    ];
-    proteinMeals[0].note = "Dr. Sims emphasizes a high-protein breakfast to stabilize cortisol and prevent muscle breakdown. Aim for 30–40g here with eggs, Greek yogurt, protein powder, or smoked salmon.";
-
-    const carbMeals = [
-      { meal: "Breakfast", amount: Math.round(carbs * 0.30), note: "Front-load carbs earlier in the day when insulin sensitivity is highest. Berries, oats, and sourdough are ideal morning sources." },
-      { meal: "Lunch", amount: Math.round(carbs * 0.35) },
-      { meal: "Dinner", amount: Math.round(carbs * 0.25) },
-      { meal: "Snack", amount: Math.round(carbs * 0.10) },
-    ];
-    carbMeals[0].note = "Front-load carbs earlier in the day when insulin sensitivity is highest. Oats, berries, lentils, and sweet potato are ideal sources throughout the day.";
-
-    const fatMeals = [
-      { meal: "Breakfast", amount: Math.round(fat * 0.30), note: "Quality fat at each meal slows glucose absorption, supports hormone production, and keeps you satiated. Prioritize olive oil, avocado, eggs, fatty fish, and nuts." },
-      { meal: "Lunch", amount: Math.round(fat * 0.30) },
-      { meal: "Dinner", amount: Math.round(fat * 0.30) },
-      { meal: "Snack", amount: Math.round(fat * 0.10) },
-    ];
-    fatMeals[0].note = "Quality fat at each meal slows glucose absorption and supports hormone production. Prioritize olive oil, avocado, fatty fish, eggs, and nuts over seed oils.";
-
-    setResults({
-      tdee, bmr: Math.round(bmr), weightKg,
-      protein, carbs, fat,
-      proteinCals, carbCals, fatCals: Math.round(fat * 9),
-      proteinPct, carbPct, fatPct,
-      proteinMin: Math.round(proteinMin), proteinMax: Math.round(proteinMax),
-      proteinMeals, carbMeals, fatMeals,
-    });
+  var cardStyle = {
+    background:"white", borderRadius:"24px", padding:"28px",
+    boxShadow:"0 8px 40px rgba(100,60,30,0.10)", marginBottom:"20px"
+  };
+  var inputStyle = {
+    width:"100%", padding:"12px 14px", borderRadius:"12px",
+    border:"2px solid #e8ddd6", fontSize:"15px",
+    fontFamily:"'Libre Baskerville', serif", color:"#3d2c24",
+    background:"white", outline:"none", boxSizing:"border-box"
+  };
+  var lblStyle = {
+    fontSize:"13px", color:"#7a6a5e", marginBottom:"6px",
+    display:"block", fontStyle:"italic"
   };
 
-  const inputStyle = {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: "12px",
-    border: "2px solid #e8ddd6",
-    fontSize: "15px",
-    fontFamily: "'Libre Baskerville', serif",
-    color: "#3d2c24",
-    background: "white",
-    outline: "none",
-    boxSizing: "border-box",
-    transition: "border-color 0.2s",
-  };
+  /* ── RangeBar ── */
+  function RangeBar(props) {
+    var pct = Math.min(100, Math.max(0, ((props.value - props.min) / (props.max - props.min)) * 100));
+    return e("div", { style:{ marginBottom:"10px" } },
+      e("div", { style:{ display:"flex", justifyContent:"space-between", marginBottom:"4px" } },
+        e("span", { style:{ fontSize:"13px", color:"#6b5a4e" } }, props.label),
+        e("span", { style:{ fontSize:"13px", fontWeight:"700", color:"#3d2c24" } }, Math.round(props.value) + props.unit)
+      ),
+      e("div", { style:{ height:"8px", borderRadius:"4px", background:"#e8ddd6", overflow:"hidden" } },
+        e("div", { style:{ height:"100%", width:pct+"%", background:props.color, borderRadius:"4px", transition:"width 0.5s ease" } })
+      ),
+      e("div", { style:{ display:"flex", justifyContent:"space-between", marginTop:"3px" } },
+        e("span", { style:{ fontSize:"11px", color:"#a08070" } }, props.min + props.unit),
+        e("span", { style:{ fontSize:"11px", color:"#a08070" } }, props.max + props.unit)
+      )
+    );
+  }
 
-  const labelStyle = {
-    fontSize: "13px",
-    color: "#7a6a5e",
-    marginBottom: "6px",
-    display: "block",
-    fontFamily: "'Libre Baskerville', serif",
-    fontStyle: "italic",
-  };
+  /* ── MacroCard ── */
+  function MacroCard(props) {
+    var open = useState(false);
+    var isOpen = open[0];
+    var setOpen = open[1];
 
-  return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #fdf6f0 0%, #f5ebe0 50%, #ede0d4 100%)",
-      fontFamily: "'Libre Baskerville', serif",
-      padding: "20px",
-    }}>
-      <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet" />
+    return e("div", {
+      onClick: function() { setOpen(!isOpen); },
+      style:{
+        background:"white", borderRadius:"16px", padding:"18px 20px", cursor:"pointer",
+        border:"2px solid " + (isOpen ? props.color : "#f0e8e0"),
+        transition:"all 0.3s ease",
+        boxShadow: isOpen ? "0 4px 20px " + props.color + "40" : "0 2px 8px rgba(0,0,0,0.05)"
+      }
+    },
+      e("div", { style:{ display:"flex", justifyContent:"space-between", alignItems:"center" } },
+        e("div", { style:{ display:"flex", alignItems:"center", gap:"10px" } },
+          e("div", { style:{ width:"40px", height:"40px", borderRadius:"12px", background:props.color+"20",
+              display:"flex", alignItems:"center", justifyContent:"center", fontSize:"20px" } }, props.emoji),
+          e("div", null,
+            e("div", { style:{ fontWeight:"700", color:"#3d2c24", fontSize:"16px" } }, props.label),
+            e("div", { style:{ fontSize:"12px", color:"#a08070" } }, props.pct + "% of calories")
+          )
+        ),
+        e("div", { style:{ textAlign:"right" } },
+          e("div", { style:{ fontWeight:"700", color:props.color, fontSize:"22px" } }, Math.round(props.grams) + "g"),
+          e("div", { style:{ fontSize:"12px", color:"#a08070" } }, Math.round(props.calories) + " kcal")
+        )
+      ),
+      isOpen && e("div", { style:{ marginTop:"14px", borderTop:"1px solid #f0e8e0", paddingTop:"12px" } },
+        e("div", { style:{ fontSize:"12px", color:"#7a6a5e", marginBottom:"8px", fontStyle:"italic" } }, "Suggested per-meal distribution"),
+        props.meals.map(function(m, i) {
+          return e("div", { key:i, style:{
+            display:"flex", justifyContent:"space-between", padding:"6px 0",
+            borderBottom: i < props.meals.length - 1 ? "1px solid #f8f4f0" : "none"
+          }},
+            e("span", { style:{ fontSize:"13px", color:"#6b5a4e" } }, m.meal),
+            e("span", { style:{ fontSize:"13px", fontWeight:"600", color:"#3d2c24" } }, m.amount + "g")
+          );
+        }),
+        props.note && e("div", { style:{
+          marginTop:"10px", padding:"10px", background:props.color+"12",
+          borderRadius:"10px", fontSize:"12px", color:"#6b5a4e", lineHeight:"1.6"
+        }}, props.note)
+      ),
+      e("div", { style:{ marginTop:"10px", textAlign:"center", fontSize:"11px", color:"#c0a090" } },
+        isOpen ? "tap to close" : "tap for meal breakdown")
+    );
+  }
 
-      <div style={{ maxWidth: "560px", margin: "0 auto" }}>
+  /* ── SelectOption ── */
+  function SelectOption(props) {
+    return e("div", {
+      onClick: props.onClick,
+      style:{
+        padding:"12px 16px", borderRadius:"12px", cursor:"pointer",
+        border:"2px solid " + (props.selected ? props.accent : "#e8ddd6"),
+        background: props.selected ? props.accent + "18" : "white",
+        transition:"all 0.2s"
+      }
+    },
+      e("div", { style:{ fontWeight:"700", fontSize:"14px", color: props.selected ? props.accent : "#3d2c24" } }, props.label),
+      e("div", { style:{ fontSize:"12px", color:"#a08070", marginTop:"2px" } }, props.desc)
+    );
+  }
 
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "32px", paddingTop: "10px" }}>
-          <div style={{ fontSize: "32px", marginBottom: "8px" }}>🌿</div>
-          <h1 style={{ fontFamily: "'Libre Baskerville', serif", fontWeight: "700", color: "#3d2c24", fontSize: "26px", margin: "0 0 8px 0", lineHeight: "1.3" }}>
-            Menopause Macro Calculator
-          </h1>
-          <p style={{ color: "#8a7060", fontSize: "14px", margin: 0, lineHeight: "1.6", fontStyle: "italic" }}>
-            Based on Dr. Stacy Sims' research on female physiology.<br />Protein targets, carb needs, and fat ranges calibrated to your stage.
-          </p>
-        </div>
+  /* ── App ── */
+  function App() {
+    var unitState    = useState("imperial"); var unit = unitState[0]; var setUnit = unitState[1];
+    var weightState  = useState(""); var weight = weightState[0]; var setWeight = weightState[1];
+    var hFtState     = useState(""); var hFt = hFtState[0]; var setHFt = hFtState[1];
+    var hInState     = useState(""); var hIn = hInState[0]; var setHIn = hInState[1];
+    var hCmState     = useState(""); var hCm = hCmState[0]; var setHCm = hCmState[1];
+    var ageState     = useState(""); var age = ageState[0]; var setAge = ageState[1];
+    var actState     = useState(1);  var activity = actState[0]; var setAct = actState[1];
+    var stageState   = useState(0);  var stage = stageState[0]; var setStage = stageState[1];
+    var resultsState = useState(null); var results = resultsState[0]; var setResults = resultsState[1];
+    var errState     = useState(""); var err = errState[0]; var setErr = errState[1];
 
-        {/* Form Card */}
-        <div style={{ background: "white", borderRadius: "24px", padding: "28px", boxShadow: "0 8px 40px rgba(100,60,30,0.10)", marginBottom: "20px" }}>
+    function switchUnit(u) {
+      setUnit(u); setWeight(""); setHFt(""); setHIn(""); setHCm(""); setResults(null); setErr("");
+    }
 
-          {/* Unit Toggle */}
-          <div style={{ display: "flex", marginBottom: "24px", background: "#f5ebe0", borderRadius: "12px", padding: "4px" }}>
-            {["imperial", "metric"].map(u => (
-              <button key={u} onClick={() => { setUnit(u); setWeight(""); setHeightFt(""); setHeightIn(""); setHeightCm(""); }}
-                style={{
-                  flex: 1, padding: "10px", border: "none", borderRadius: "10px", cursor: "pointer", fontFamily: "'Libre Baskerville', serif",
-                  fontSize: "14px", fontWeight: "700", transition: "all 0.2s",
+    function calc() {
+      setErr("");
+      var wKg, hCmV;
+      if (unit === "imperial") {
+        if (!weight || !hFt || !age) { setErr("Please fill in weight, height (ft), and age."); return; }
+        wKg  = parseFloat(weight) * 0.453592;
+        hCmV = (parseFloat(hFt) * 12 + parseFloat(hIn || 0)) * 2.54;
+      } else {
+        if (!weight || !hCm || !age) { setErr("Please fill in weight, height, and age."); return; }
+        wKg  = parseFloat(weight);
+        hCmV = parseFloat(hCm);
+      }
+      var ageV = parseFloat(age);
+      if (wKg <= 0 || hCmV <= 0 || ageV <= 0) { setErr("Please enter valid numbers."); return; }
+
+      var act = ACTIVITY[activity];
+      var stg = STAGES[stage];
+
+      var bmr  = 10 * wKg + 6.25 * hCmV - 5 * ageV - 161;
+      var tdee = Math.round(bmr * act.mult);
+
+      var pMin    = Math.round(stg.pm * wKg);
+      var pMax    = Math.round((stg.pm + 0.2) * wKg);
+      var protein = Math.round((pMin + pMax) / 2);
+      var pCal    = protein * 4;
+
+      var carbs = Math.round(act.ck * wKg);
+      var cCal  = carbs * 4;
+
+      var fat  = Math.round(Math.max(tdee - pCal - cCal, tdee * 0.25) / 9);
+      var fCal = fat * 9;
+
+      var tot  = pCal + cCal + fCal;
+      var pPct = Math.round(pCal / tot * 100);
+      var cPct = Math.round(cCal / tot * 100);
+      var fPct = 100 - pPct - cPct;
+
+      setResults({
+        tdee: tdee, protein: protein, carbs: carbs, fat: fat,
+        pCal: pCal, cCal: cCal, fCal: fCal,
+        pPct: pPct, cPct: cPct, fPct: fPct,
+        pMin: pMin, pMax: pMax,
+        stageName: stg.label, pMult: stg.pm,
+        pM: [
+          { meal:"Breakfast",            amount: Math.round(protein * 0.30) },
+          { meal:"Lunch",                amount: Math.round(protein * 0.30) },
+          { meal:"Dinner",               amount: Math.round(protein * 0.30) },
+          { meal:"Snack / Post-Workout", amount: Math.round(protein * 0.10) },
+        ],
+        cM: [
+          { meal:"Breakfast", amount: Math.round(carbs * 0.30) },
+          { meal:"Lunch",     amount: Math.round(carbs * 0.35) },
+          { meal:"Dinner",    amount: Math.round(carbs * 0.25) },
+          { meal:"Snack",     amount: Math.round(carbs * 0.10) },
+        ],
+        fM: [
+          { meal:"Breakfast", amount: Math.round(fat * 0.30) },
+          { meal:"Lunch",     amount: Math.round(fat * 0.30) },
+          { meal:"Dinner",    amount: Math.round(fat * 0.30) },
+          { meal:"Snack",     amount: Math.round(fat * 0.10) },
+        ],
+      });
+    }
+
+    return e("div", { style:{ minHeight:"100vh", padding:"20px" } },
+      e("div", { style:{ maxWidth:"560px", margin:"0 auto" } },
+
+        /* title */
+        e("div", { style:{ textAlign:"center", marginBottom:"32px", paddingTop:"10px" } },
+          e("div", { style:{ fontSize:"32px", marginBottom:"8px" } }, "\uD83C\uDF3F"),
+          e("h1", { style:{ fontWeight:"700", color:"#3d2c24", fontSize:"26px", margin:"0 0 8px 0", lineHeight:"1.3" } },
+            "Menopause Macro Calculator"),
+          e("p", { style:{ color:"#8a7060", fontSize:"14px", margin:0, lineHeight:"1.6", fontStyle:"italic" } },
+            "Protein, carbohydrate, and fat targets calibrated to your hormonal stage and activity level, based on female-specific exercise physiology research.")
+        ),
+
+        /* form */
+        e("div", { style: cardStyle },
+
+          /* unit toggle */
+          e("div", { style:{ display:"flex", marginBottom:"24px", background:"#f5ebe0", borderRadius:"12px", padding:"4px" } },
+            ["imperial","metric"].map(function(u) {
+              return e("button", {
+                key: u,
+                onClick: function() { switchUnit(u); },
+                style:{
+                  flex:1, padding:"10px", border:"none", borderRadius:"10px", cursor:"pointer",
+                  fontFamily:"'Libre Baskerville', serif", fontSize:"14px", fontWeight:"700",
                   background: unit === u ? "#c47c5a" : "transparent",
-                  color: unit === u ? "white" : "#8a7060",
-                }}>
-                {u === "imperial" ? "Imperial (lbs/ft)" : "Metric (kg/cm)"}
-              </button>
-            ))}
-          </div>
+                  color:      unit === u ? "white"   : "#8a7060"
+                }
+              }, u === "imperial" ? "Imperial (lbs / ft)" : "Metric (kg / cm)");
+            })
+          ),
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
-            <div>
-              <label style={labelStyle}>Weight ({unit === "imperial" ? "lbs" : "kg"})</label>
-              <input style={inputStyle} type="number" placeholder={unit === "imperial" ? "e.g. 145" : "e.g. 66"} value={weight} onChange={e => setWeight(e.target.value)} />
-            </div>
-            <div>
-              <label style={labelStyle}>Age</label>
-              <input style={inputStyle} type="number" placeholder="e.g. 48" value={age} onChange={e => setAge(e.target.value)} />
-            </div>
-          </div>
+          /* weight + age */
+          e("div", { style:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"16px", marginBottom:"16px" } },
+            e("div", null,
+              e("label", { style: lblStyle }, "Weight (" + (unit === "imperial" ? "lbs" : "kg") + ")"),
+              e("input", { style: inputStyle, type:"number", placeholder: unit === "imperial" ? "e.g. 145" : "e.g. 66",
+                value: weight, onChange: function(ev) { setWeight(ev.target.value); } })
+            ),
+            e("div", null,
+              e("label", { style: lblStyle }, "Age"),
+              e("input", { style: inputStyle, type:"number", placeholder:"e.g. 48",
+                value: age, onChange: function(ev) { setAge(ev.target.value); } })
+            )
+          ),
 
-          <div style={{ marginBottom: "16px" }}>
-            <label style={labelStyle}>Height</label>
-            {unit === "imperial" ? (
-              <div style={{ display: "flex", gap: "10px" }}>
-                <input style={{ ...inputStyle }} type="number" placeholder="ft" value={heightFt} onChange={e => setHeightFt(e.target.value)} />
-                <input style={{ ...inputStyle }} type="number" placeholder="in" value={heightIn} onChange={e => setHeightIn(e.target.value)} />
-              </div>
-            ) : (
-              <input style={inputStyle} type="number" placeholder="e.g. 165 cm" value={heightCm} onChange={e => setHeightCm(e.target.value)} />
-            )}
-          </div>
+          /* height */
+          e("div", { style:{ marginBottom:"16px" } },
+            e("label", { style: lblStyle }, "Height"),
+            unit === "imperial"
+              ? e("div", { style:{ display:"flex", gap:"10px" } },
+                  e("input", { style: inputStyle, type:"number", placeholder:"ft", value: hFt, onChange: function(ev) { setHFt(ev.target.value); } }),
+                  e("input", { style: inputStyle, type:"number", placeholder:"in", value: hIn, onChange: function(ev) { setHIn(ev.target.value); } })
+                )
+              : e("input", { style: inputStyle, type:"number", placeholder:"e.g. 165 cm", value: hCm, onChange: function(ev) { setHCm(ev.target.value); } })
+          ),
 
-          {/* Stage */}
-          <div style={{ marginBottom: "16px" }}>
-            <label style={labelStyle}>Hormonal Stage</label>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {STAGE_OPTIONS.map((s, i) => (
-                <div key={i} onClick={() => setStage(i)} style={{
-                  padding: "12px 16px", borderRadius: "12px", cursor: "pointer",
-                  border: `2px solid ${stage === i ? "#c47c5a" : "#e8ddd6"}`,
-                  background: stage === i ? "#fdf3ed" : "white",
-                  transition: "all 0.2s",
-                }}>
-                  <div style={{ fontWeight: "700", fontSize: "14px", color: stage === i ? "#c47c5a" : "#3d2c24" }}>{s.label}</div>
-                  <div style={{ fontSize: "12px", color: "#a08070", marginTop: "2px" }}>{s.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+          /* stage */
+          e("div", { style:{ marginBottom:"16px" } },
+            e("label", { style: lblStyle }, "Hormonal Stage"),
+            e("div", { style:{ display:"flex", flexDirection:"column", gap:"8px" } },
+              STAGES.map(function(s, i) {
+                return e(SelectOption, { key:i, label:s.label, desc:s.desc, selected:stage===i, accent:"#c47c5a", onClick:function() { setStage(i); } });
+              })
+            )
+          ),
 
-          {/* Activity */}
-          <div style={{ marginBottom: "24px" }}>
-            <label style={labelStyle}>Activity Level</label>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {ACTIVITY_LEVELS.map((a, i) => (
-                <div key={i} onClick={() => setActivity(i)} style={{
-                  padding: "12px 16px", borderRadius: "12px", cursor: "pointer",
-                  border: `2px solid ${activity === i ? "#7a9e7e" : "#e8ddd6"}`,
-                  background: activity === i ? "#f2f8f2" : "white",
-                  transition: "all 0.2s",
-                }}>
-                  <div style={{ fontWeight: "700", fontSize: "14px", color: activity === i ? "#4a7c59" : "#3d2c24" }}>{a.label}</div>
-                  <div style={{ fontSize: "12px", color: "#a08070", marginTop: "2px" }}>{a.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
+          /* activity */
+          e("div", { style:{ marginBottom:"24px" } },
+            e("label", { style: lblStyle }, "Activity Level"),
+            e("div", { style:{ display:"flex", flexDirection:"column", gap:"8px" } },
+              ACTIVITY.map(function(a, i) {
+                return e(SelectOption, { key:i, label:a.label, desc:a.desc, selected:activity===i, accent:"#7a9e7e", onClick:function() { setAct(i); } });
+              })
+            )
+          ),
 
-          <button onClick={calculate} style={{
-            width: "100%", padding: "16px", border: "none", borderRadius: "14px", cursor: "pointer",
-            background: "linear-gradient(135deg, #c47c5a, #a05c3a)",
-            color: "white", fontSize: "16px", fontFamily: "'Libre Baskerville', serif",
-            fontWeight: "700", letterSpacing: "0.5px", transition: "transform 0.2s, box-shadow 0.2s",
-            boxShadow: "0 4px 20px rgba(160,92,58,0.35)",
-          }}
-            onMouseOver={e => e.currentTarget.style.transform = "translateY(-2px)"}
-            onMouseOut={e => e.currentTarget.style.transform = "translateY(0)"}
-          >
-            Calculate My Macros
-          </button>
-        </div>
+          /* error */
+          err ? e("div", { style:{ padding:"10px 14px", background:"#fff0ed", border:"1px solid #f4a0a0",
+            borderRadius:"10px", fontSize:"13px", color:"#c04040", marginBottom:"16px" } }, err) : null,
 
-        {/* Results */}
-        {results && (
-          <div style={{ animation: "fadeIn 0.4s ease" }}>
-            <style>{`@keyframes fadeIn { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }`}</style>
+          /* submit */
+          e("button", {
+            onClick: calc,
+            style:{
+              width:"100%", padding:"16px", border:"none", borderRadius:"14px", cursor:"pointer",
+              background:"linear-gradient(135deg, #c47c5a, #a05c3a)", color:"white",
+              fontSize:"16px", fontFamily:"'Libre Baskerville', serif", fontWeight:"700",
+              boxShadow:"0 4px 20px rgba(160,92,58,0.35)"
+            }
+          }, "Calculate My Macros")
+        ),
 
-            {/* TDEE Summary */}
-            <div style={{ background: "linear-gradient(135deg, #3d2c24, #6b4535)", borderRadius: "20px", padding: "24px", marginBottom: "16px", color: "white", textAlign: "center" }}>
-              <div style={{ fontSize: "13px", opacity: 0.7, marginBottom: "4px", fontStyle: "italic" }}>Your daily calorie target</div>
-              <div style={{ fontSize: "48px", fontWeight: "700", lineHeight: "1.1" }}>{results.tdee.toLocaleString()}</div>
-              <div style={{ fontSize: "13px", opacity: 0.7 }}>kcal/day</div>
-              <div style={{ marginTop: "16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px" }}>
-                {[
-                  { label: "Protein", val: results.proteinPct + "%", color: "#f4a46a" },
-                  { label: "Carbs", val: results.carbPct + "%", color: "#82c4a0" },
-                  { label: "Fat", val: results.fatPct + "%", color: "#a8c4e4" },
-                ].map((m, i) => (
-                  <div key={i} style={{ background: "rgba(255,255,255,0.1)", borderRadius: "12px", padding: "10px 6px" }}>
-                    <div style={{ fontWeight: "700", fontSize: "18px", color: m.color }}>{m.val}</div>
-                    <div style={{ fontSize: "11px", opacity: 0.7, marginTop: "2px" }}>{m.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        /* results */
+        results ? e("div", { className:"fade-in" },
 
-            {/* Protein range note */}
-            <div style={{ background: "#fff8f4", border: "1px solid #f0ddd0", borderRadius: "14px", padding: "14px 16px", marginBottom: "16px", fontSize: "13px", color: "#7a5a48", lineHeight: "1.6" }}>
-              <strong style={{ color: "#c47c5a" }}>Protein target range:</strong> {results.proteinMin}–{results.proteinMax}g/day based on Dr. Sims' recommendation of {STAGE_OPTIONS[stage].proteinMultiplier}–{STAGE_OPTIONS[stage].proteinMultiplier + 0.2}g per kg bodyweight for {STAGE_OPTIONS[stage].label.toLowerCase()}.
-            </div>
+          /* calorie banner */
+          e("div", { style:{ background:"linear-gradient(135deg, #3d2c24, #6b4535)", borderRadius:"20px",
+            padding:"24px", marginBottom:"16px", color:"white", textAlign:"center" } },
+            e("div", { style:{ fontSize:"13px", opacity:0.7, marginBottom:"4px", fontStyle:"italic" } }, "Your daily calorie target"),
+            e("div", { style:{ fontSize:"48px", fontWeight:"700", lineHeight:"1.1" } }, results.tdee.toLocaleString()),
+            e("div", { style:{ fontSize:"13px", opacity:0.7, marginBottom:"20px" } }, "kcal / day"),
+            e("div", { style:{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"12px" } },
+              [["Protein", results.pPct+"%", "#f4a46a"],
+               ["Carbs",   results.cPct+"%", "#82c4a0"],
+               ["Fat",     results.fPct+"%", "#a8c4e4"]].map(function(row) {
+                return e("div", { key:row[0], style:{ background:"rgba(255,255,255,0.1)", borderRadius:"12px", padding:"10px 6px" } },
+                  e("div", { style:{ fontWeight:"700", fontSize:"18px", color:row[2] } }, row[1]),
+                  e("div", { style:{ fontSize:"11px", opacity:0.7, marginTop:"2px" } }, row[0])
+                );
+              })
+            )
+          ),
 
-            {/* Range Bars */}
-            <div style={{ background: "white", borderRadius: "20px", padding: "24px", marginBottom: "16px", boxShadow: "0 4px 20px rgba(100,60,30,0.07)" }}>
-              <div style={{ fontWeight: "700", color: "#3d2c24", marginBottom: "16px", fontSize: "15px" }}>Daily Ranges</div>
-              <RangeBar label="Protein" value={results.protein} unit="g" min={results.proteinMin} max={results.proteinMax + 10} color="#f4a46a" />
-              <RangeBar label="Carbohydrates" value={results.carbs} unit="g" min={Math.round(results.carbs * 0.75)} max={Math.round(results.carbs * 1.3)} color="#82c4a0" />
-              <RangeBar label="Fat" value={results.fat} unit="g" min={Math.round(results.fat * 0.8)} max={Math.round(results.fat * 1.25)} color="#a8c4e4" />
-            </div>
+          /* protein range note */
+          e("div", { style:{ background:"#fff8f4", border:"1px solid #f0ddd0", borderRadius:"14px",
+            padding:"14px 16px", marginBottom:"16px", fontSize:"13px", color:"#7a5a48", lineHeight:"1.6" } },
+            e("strong", { style:{ color:"#c47c5a" } }, "Protein target range: "),
+            results.pMin + " to " + results.pMax + "g per day, based on " +
+            results.pMult.toFixed(1) + " to " + (results.pMult + 0.2).toFixed(1) +
+            "g per kg of bodyweight for " + results.stageName.toLowerCase() + "."
+          ),
 
-            {/* Macro Cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "16px" }}>
-              <MacroCard label="Protein" grams={results.protein} calories={results.proteinCals} pct={results.proteinPct} color="#e87c3c" emoji="🥚"
-                mealBreakdown={[...results.proteinMeals]} />
-              <MacroCard label="Carbohydrates" grams={results.carbs} calories={results.carbCals} pct={results.carbPct} color="#4a9e6a" emoji="🌾"
-                mealBreakdown={[...results.carbMeals]} />
-              <MacroCard label="Fat" grams={results.fat} calories={results.fatCals} pct={results.fatPct} color="#4a7ca8" emoji="🥑"
-                mealBreakdown={[...results.fatMeals]} />
-            </div>
+          /* range bars */
+          e("div", { style: Object.assign({}, cardStyle, { marginBottom:"16px" }) },
+            e("div", { style:{ fontWeight:"700", color:"#3d2c24", marginBottom:"16px", fontSize:"15px" } }, "Daily Ranges"),
+            e(RangeBar, { label:"Protein",       value:results.protein, unit:"g", min:results.pMin,                   max:results.pMax+10,                color:"#f4a46a" }),
+            e(RangeBar, { label:"Carbohydrates", value:results.carbs,   unit:"g", min:Math.round(results.carbs*0.75), max:Math.round(results.carbs*1.3),  color:"#82c4a0" }),
+            e(RangeBar, { label:"Fat",           value:results.fat,     unit:"g", min:Math.round(results.fat*0.8),    max:Math.round(results.fat*1.25),   color:"#a8c4e4" })
+          ),
 
-            {/* Notes card */}
-            <div style={{ background: "white", borderRadius: "20px", padding: "24px", marginBottom: "24px", boxShadow: "0 4px 20px rgba(100,60,30,0.07)" }}>
-              <div style={{ fontWeight: "700", color: "#3d2c24", marginBottom: "14px", fontSize: "15px" }}>Key Reminders from Dr. Sims</div>
-              {[
-                { icon: "🚫", text: "Do not skip breakfast. Fasted training raises cortisol and worsens menopausal symptoms in women." },
-                { icon: "💪", text: "Post-workout protein should be 40–60g within 45 minutes to overcome anabolic resistance." },
-                { icon: "🌿", text: "Hit your protein at breakfast first. Front-load carbs earlier in the day when insulin sensitivity is highest." },
-                { icon: "🍷", text: "Even one drink per day measurably impairs estrogen detoxification and worsens hot flashes and sleep." },
-                { icon: "🔬", text: "These targets are a research-based starting point. Adjust based on your labs, symptoms, and how you feel." },
-              ].map((n, i) => (
-                <div key={i} style={{ display: "flex", gap: "12px", padding: "10px 0", borderBottom: i < 4 ? "1px solid #f8f4f0" : "none", alignItems: "flex-start" }}>
-                  <span style={{ fontSize: "18px" }}>{n.icon}</span>
-                  <span style={{ fontSize: "13px", color: "#6b5a4e", lineHeight: "1.6" }}>{n.text}</span>
-                </div>
-              ))}
-            </div>
+          /* macro cards */
+          e("div", { style:{ display:"flex", flexDirection:"column", gap:"12px", marginBottom:"16px" } },
+            e(MacroCard, { label:"Protein", grams:results.protein, calories:results.pCal, pct:results.pPct,
+              color:"#e87c3c", emoji:"\uD83E\uDD5A", meals:results.pM,
+              note:"Prioritize a high-protein breakfast. Distribute evenly across meals to trigger muscle protein synthesis at each eating occasion. Post-workout protein should be 40 to 60g within 45 minutes." }),
+            e(MacroCard, { label:"Carbohydrates", grams:results.carbs, calories:results.cCal, pct:results.cPct,
+              color:"#4a9e6a", emoji:"\uD83C\uDF3E", meals:results.cM,
+              note:"Front-load carbs earlier in the day when insulin sensitivity is highest. Choose lentils, oats, sweet potato, berries, and whole grain sourdough over refined sources." }),
+            e(MacroCard, { label:"Fat", grams:results.fat, calories:results.fCal, pct:results.fPct,
+              color:"#4a7ca8", emoji:"\uD83E\uDD51", meals:results.fM,
+              note:"Prioritize olive oil, avocado, fatty fish, eggs, and nuts. Replace seed oils with extra-virgin olive oil or avocado oil." })
+          ),
 
-          </div>
-        )}
+          /* reminders */
+          e("div", { style: Object.assign({}, cardStyle, { marginBottom:"24px" }) },
+            e("div", { style:{ fontWeight:"700", color:"#3d2c24", marginBottom:"14px", fontSize:"15px" } }, "Key Reminders"),
+            [
+              ["\uD83D\uDEAB", "Do not skip breakfast. Fasted training raises cortisol and worsens menopausal symptoms."],
+              ["\uD83D\uDCAA", "Post-workout protein should be 40 to 60g within 45 minutes to overcome anabolic resistance."],
+              ["\uD83C\uDF3F", "Front-load both protein and carbohydrates earlier in the day for the best metabolic response."],
+              ["\uD83C\uDF77", "Even one drink per day measurably impairs estrogen detoxification and worsens hot flashes and sleep."],
+              ["\uD83D\uDD2C", "These targets are a research-based starting point. Adjust based on labs, symptoms, and how you feel."],
+            ].map(function(row, i) {
+              return e("div", { key:i, style:{ display:"flex", gap:"12px", padding:"10px 0",
+                borderBottom: i < 4 ? "1px solid #f8f4f0" : "none", alignItems:"flex-start" } },
+                e("span", { style:{ fontSize:"18px" } }, row[0]),
+                e("span", { style:{ fontSize:"13px", color:"#6b5a4e", lineHeight:"1.6" } }, row[1])
+              );
+            })
+          )
 
-        <div style={{ textAlign: "center", fontSize: "11px", color: "#b0a090", paddingBottom: "30px", fontStyle: "italic" }}>
-          Based on Dr. Stacy Sims' research in Next Level (2022) and the International Society of Sports Nutrition Female Athlete Position Stand.
-          Not a substitute for individual clinical guidance.
-        </div>
-      </div>
-    </div>
-  );
-}
+        ) : null,
+
+        /* footer */
+        e("div", { style:{ textAlign:"center", fontSize:"11px", color:"#b0a090", paddingBottom:"30px", fontStyle:"italic" } },
+          "Based on published research in exercise physiology and female-specific sports nutrition, including the International Society of Sports Nutrition Female Athlete Position Stand. Not a substitute for individual clinical guidance.")
+
+      )
+    );
+  }
+
+  var root = ReactDOM.createRoot(document.getElementById("root"));
+  root.render(e(App));
+})();
+</script>
+</body>
+</html>
